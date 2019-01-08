@@ -1,0 +1,103 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <body>
+            <style>
+                #wrapper{
+                    overflow: hidden;
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                }
+                #sprite{
+                    position: absolute;
+                    left: -300px; 
+                    top: 40%;
+                    width: 300px;
+                    height: 200px;
+                }
+
+                .animation{
+                    animation-name: spriteAn;
+                    animation-duration: 3s;
+                    animation-timing-function: linear;
+
+                    -moz-animation-name: spriteAn;
+                    -moz-animation-duration: 3s;
+                    -moz-animation-timing-function: linear;
+                    -webkit-animation-name: spriteAn;
+                    -webkit-animation-duration: 3s;
+                    -webkit-animation-timing-function: linear;
+
+                    -o-animation-name: spriteAn;
+                    -o-animation-duration: 3s;
+                    -o-animation-timing-function: linear;
+                }
+                @keyframes spriteAn
+                {
+                    100% {left: 100%}
+                }
+
+                @-moz-keyframes spriteAn /* Firefox */
+                {
+                    100% {left: 100%}
+                }
+
+                @-webkit-keyframes spriteAn /* Safari and Chrome */
+                {
+                    100% {left: 100%}
+                }
+
+                @-o-keyframes spriteAn /* Opera */
+                {
+                    100% {left: 100%}
+                }
+
+            </style>
+            <div id="wrapper">
+                <img id="sprite" src="http://192.168.0.7/sprite.jpg" />
+            </div>
+        </body>
+        <script lang="javascript">
+            function getQueryString(name) {
+                var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) {
+                    return unescape(r[2]);
+                }
+                return null;
+            }
+
+            var number = getQueryString('number');
+            var socket = new WebSocket('ws://192.168.0.7:80/ws');
+            var sprite = document.getElementById('sprite');
+
+            socket.onopen = function () {
+                console.log('connected');
+            }
+
+            socket.onmessage = function (e) {
+                if (e.data === 'start') {
+                    sendStart();
+                }
+            }
+
+            function sendNextStart() {
+                console.log('sendNextStart')
+                sprite.classList.remove('animation');
+	        	socket.send(number);
+        	}
+
+            function sendStart() {
+                console.log('sendStart')
+                sprite.classList.add('animation');
+                setTimeout(sendNextStart, 3000);
+            }
+
+            if (number === '1') {
+                setTimeout(sendStart,10000);
+            }
+        </script>
+    </body>
+</html>
